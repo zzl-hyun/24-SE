@@ -12,6 +12,7 @@ additional.py   추가 기능
 발견한 문제
 1. handle_acceleration() 함수 중복
 2. ALL_DOOR_LOCK, ALL_DOOR_UNLOCK -> UNLOCK, LOCK 으로 수정해야함 (input 조건 안맞음)
+3. CarCommandExecutor __init__ 수정 필요   EngineController(car_controller)  -> EngineController(self.car_controller) self.로 바꿔야 함
 
 예외상황 만족?
 최고속도 가속 제한
@@ -185,7 +186,6 @@ class DoorLockController:
         else:
             self.car_controller.unlock_vehicle()
             
-
     def allDoor_Lock(self):
         tryCase = "모든 문 잠금 시도"
 
@@ -386,11 +386,11 @@ class TrunkController:
 class CarCommandExecutor:
     def __init__(self, car_controller):
         self.car_controller = car_controller
-        self.engin_controller = EngineController(car_controller)
-        self.movement_controller = MovementController(car_controller)
-        self.doorLock_controller = DoorLockController(car_controller) # lock.py
-        self.trunk_controller = TrunkController(car_controller) # openClose.py
-        self.sos_controller = SOSController(car_controller) # addional.py
+        self.engin_controller = EngineController(self.car_controller)
+        self.movement_controller = MovementController(self.car_controller)
+        self.doorLock_controller = DoorLockController(self.car_controller) # lock.py
+        self.trunk_controller = TrunkController(self.car_controller) # openClose.py
+        self.sos_controller = SOSController(self.car_controller) # addional.py
     
     def execute_command(self, command):
         if command == "ENGINE_BTN":
