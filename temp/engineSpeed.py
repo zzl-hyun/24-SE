@@ -74,6 +74,7 @@ class CarCommandExecutor:
             self.movement_controller.handle_acceleration()
         elif command == "BRAKE":
             self.movement_controller.handle_brake()
+            
         elif command == "LOCK":
             self.car_controller.lock_vehicle()
         elif command == "UNLOCK":
@@ -89,26 +90,4 @@ class CarCommandExecutor:
         elif command == "TRUNK_OPEN":
             self.car_controller.open_trunk()
 
-# execute_command를 제어하는 콜백 함수
-def execute_command_callback(command, car_controller):
-    executor = CarCommandExecutor(car_controller)
-    executor.execute_command(command)
 
-# 파일 경로를 입력받는 함수
-def file_input_thread(gui):
-    while True:
-        file_path = input("Please enter the command file path (or 'exit' to quit): ")
-        if file_path.lower() == 'exit':
-            print("Exiting program.")
-            break
-        gui.window.after(0, lambda: gui.process_commands(file_path))
-
-# 메인 실행
-if __name__ == "__main__":
-    car = Car()
-    car_controller = CarController(car)
-    gui = CarSimulatorGUI(car_controller, lambda command: execute_command_callback(command, car_controller))
-    input_thread = threading.Thread(target=file_input_thread, args=(gui,))
-    input_thread.daemon = True
-    input_thread.start()
-    gui.start()

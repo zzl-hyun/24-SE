@@ -32,11 +32,7 @@ class MovementController:
         self.max_speed = 200 # 최대 속도 제한
 
     def handle_acceleration(self):
-        """
-        가속 처리
-        Returns:
-            가속 명령이 실행되었으면 True, 제한되었으면 False
-        """
+     
         if self.car_controller.get_speed() < self.max_speed:
             self.car_controller.accelerate()
             return True
@@ -87,24 +83,30 @@ class CarCommandExecutor:
     def execute_command(self, command):
         if command == "ENGINE_BTN":
             return self.engin_controller.handle_engine_control()
+        
         elif command == "ACCELERATE":
             self.movement_controller.handle_acceleration()
         elif command == "BRAKE":
             self.movement_controller.handle_brake()
+            
         elif command == "LOCK":
             self.car_controller.lock_vehicle()
         elif command == "UNLOCK":
             self.car_controller.unlock_vehicle()
+            
         elif command == "LEFT_DOOR_LOCK":
             self.car_controller.lock_left_door()
         elif command == "LEFT_DOOR_UNLOCK":
             self.car_controller.unlock_left_door()
+            
         elif command == "LEFT_DOOR_OPEN":
             self.car_controller.open_left_door()
         elif command == "LEFT_DOOR_CLOSE":
             self.car_controller.close_left_door()
+            
         elif command == "TRUNK_OPEN":
             self.car_controller.open_trunk()
+            
         elif command == "SOS":
             self.sos_controller.activate_sos()  # SOS 기능 호출
 
