@@ -169,7 +169,7 @@ class CarSimulatorGUI:
                     command = commands[current_command_index]
 
                     # 명령어 실행
-                    print(f"\n{current_command_index}) {command}")
+                    print(f"Executing command: {command}")
                     
                     self.execute_command(command)  # 명령 실행
                     current_command_index += 1

@@ -42,7 +42,11 @@ class MovementController:
             print("[속도 감응식 문 잠금]")
 
     def handle_acceleration(self):
-
+        """
+        가속 처리
+        Returns:
+            가속 명령이 실행되었으면 True, 제한되었으면 False
+        """
         if self.car_controller.get_speed() < self.max_speed:
             self.car_controller.accelerate()
             if self.car_controller.get_speed() >= 15:
@@ -52,7 +56,11 @@ class MovementController:
         return False
 
     def handle_brake(self):
- 
+        """
+        감속 처리
+        Returns:
+            브레이크 명령이 실행되었으면 True, 제한되었으면 False
+        """
         if self.car_controller.get_speed() > self.min_speed:
             self.car_controller.brake()
             return True
@@ -212,7 +220,7 @@ class CarCommandExecutor:
             self.movement_controller.handle_acceleration()
         elif command == "BRAKE":
             self.movement_controller.handle_brake()
-            
+        
         elif command == "ALL_DOOR_LOCK":
             self.doorLock_controller.allDoor_Lock()
         elif command == "ALL_DOOR_UNLOCK":
@@ -225,7 +233,7 @@ class CarCommandExecutor:
             self.doorLock_controller.rightDoor_Lock()
         elif command == "RIGHT_DOOR_LOCK":
             self.doorLock_controller.rightDoor_unLock()
-            
+        
         elif command == "LEFT_DOOR_OPEN":
             self.car_controller.open_left_door()
         elif command == "LEFT_DOOR_CLOSE":

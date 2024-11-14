@@ -2,6 +2,7 @@ import threading
 from car import Car
 from car_controller import CarController
 from gui import CarSimulatorGUI
+import unittest
 
 """
 openClose.py    문 열기/닫기 제어(4~5), 트렁크 제어
@@ -9,28 +10,28 @@ lock.py         문 잠금 제어(6~8)
 engineSpeed.py  엔진제어(1~2) 속도 제어(9~10)
 additional.py   추가 기능 
 
-발견한 문제
+# 발견한 문제
+1. 서로 연관된 컨트롤러 전달해야 할 듯?
+ex) sos : lock, open, trunk, engine, speed 다 관여 
+
+
+# 유닛테스팅 수행
+SOS 기능에 대한 테스트 코드 작성 후 프로젝트에 포함시킬 것 (unittest 라이브러리 이용할 것)
+
+그 외 기능에 대해, 최소 1개의 테스트 케이스를 만들어서 프로젝트에 포함시킬 것
+
+
+# 수정 완
 1. handle_acceleration() 함수 중복
 2. ALL_DOOR_LOCK, ALL_DOOR_UNLOCK -> UNLOCK, LOCK 으로 수정해야함 (input 조건 안맞음)
 3. CarCommandExecutor __init__ 수정 필요   EngineController(car_controller)  -> EngineController(self.car_controller) self.로 바꿔야 함
 
-예외상황 만족?
-최고속도 가속 제한
-엔진 강제 정지
+1. SOS 실행 시 문이 LOCKED에서도 열림
+ -> 서로 연관된 컨트롤러 전달해야 할 듯?
+    ex) sos : lock, open, trunk, engine, speed 다 관여 
+2. trunkcontroller의 self.current_speed = self.car_controller.get_speed() 제거
+    시점이 다름 self.car_controller.get_speed()로 실시간으로 확인해야함
 
-문이 잠긴 상태에서 문 열기
-문이 잠금 해제된 상태에서 ??
-
-문이 열린 상태에서 잠금
-문이 닫힌 상태에서 ??
-
-트렁크가 열린 상태에서 열기
-트렁크가 닫힌 상태에서 닫기
-
-
-# srs에 있는지 체크, 없으면 무시
-# 문이 열린 상태에서 가속	
-# 트렁크가 열린 상태에서 가속 
 """
 
 
@@ -61,25 +62,40 @@ class EngineController:
 """SOS 기능 제어 클래스"""
 ## addional.py 
 class SOSController:
-    def __init__(self, car_controller):
+
+    def __init__(self, car_controller, movement_controller, doorLock_controller, door_open_controller, trunk_controller, engin_controller):
         self.car_controller = car_controller
+        ## 컨트롤러 추가했음
+        self.movement_controller = movement_controller
+        self.doorLock_controller = doorLock_controller
+        self.door_open_controller = door_open_controller
+        self.trunk_controller = trunk_controller
+        self.engin_controller = engin_controller
 
     def activate_sos(self):
         """SOS 기능: 차를 정지하고 모든 문을 열며 트렁크를 여는 기능"""
         print("SOS 기능이 활성화되었습니다: 차량이 정지되고, 모든 문이 열렸으며, 트렁크가 열렸습니다.")
         # 차량 정지
         while self.car_controller.get_speed() > 0:
-            self.car_controller.brake()
+            # self.car_controller.brake()
+            self.movement_controller.handle_brake()
 
         # 모든 문 잠금 해제
-        self.car_controller.unlock_vehicle()
-        self.car_controller.open_left_door()
-        self.car_controller.open_right_door()
+        # self.car_controller.unlock_vehicle()
+        # print(self.car_controller.get_lock_status())
+        # self.car_controller.open_left_door()
+        # self.car_controller.open_right_door()
+        self.doorLock_controller.allDoor_unLock()
+        self.door_open_controller.handle_left_door_open_controller()
+        self.door_open_controller.handle_right_door_open_controller()
+
         # 트렁크 열기
-        self.car_controller.open_trunk()
+        # self.car_controller.open_trunk()
+        self.trunk_controller.handle_trunk_open_controller()
         # 엔진 끄기
         if self.car_controller.get_engine_status():
-            self.car_controller.toggle_engine()
+            # self.car_controller.toggle_engine()
+            self.engin_controller.handle_engine_control()
        
 
 """차량 이동 제어 관련 클래스"""
@@ -96,33 +112,32 @@ class MovementController:
         if self.car_controller.get_lock_status() == False:
             self.car_controller.unlock_left_door()
             self.car_controller.unlock_right_door()
-
             self.car_controller.lock_vehicle()
             print("[속도 감응식 문 잠금]")
             
             
-    ## lock.py, engineSpeed.py handle_acceleration() 함수 중복
-    def handle_acceleration(self): #lock.py
+    # ## lock.py, engineSpeed.py handle_acceleration() 함수 중복
+    # def handle_acceleration(self): #lock.py
 
-        if self.car_controller.get_speed() < self.max_speed:
-            self.car_controller.accelerate()
-            if self.car_controller.get_speed() >= 15:
-                self.autoLock_by_speed()
-            return True
-        print("속도가 최대값에 도달하여 가속할 수 없습니다.")
-        return False
+    #     if self.car_controller.get_speed() < self.max_speed:
+    #         self.car_controller.accelerate()
+    #         if self.car_controller.get_speed() >= 15:
+    #             self.autoLock_by_speed()
+    #         return True
+    #     print("속도가 최대값에 도달하여 가속할 수 없습니다.")
+    #     return False
+    
     ## lock.py, engineSpeed.py handle_acceleration() 함수 중복
     def handle_acceleration(self): # engineSpeed.py
-        """
-        가속 처리
-        Returns:
-            가속 명령이 실행되었으면 True, 제한되었으면 False
-        """
+
         current_engin_status = self.car_controller.get_engine_status()
 
         if current_engin_status:
             if self.car_controller.get_speed() < self.max_speed:
                 self.car_controller.accelerate()
+                ## lock.py의 속도감응식 뭐시기 추가
+                if self.car_controller.get_speed() >= 15:
+                    self.autoLock_by_speed()
                 return True
             print("[IGNORE] 차량이 최고 속도에 도달함")
             return False
@@ -137,6 +152,8 @@ class MovementController:
         """
         if self.car_controller.get_speed() > self.min_speed:
             self.car_controller.brake()
+            ## debug
+            print(f"감속됨 {self.car_controller.get_speed()}")
             return True
         print("[IGNORE] 차량이 정차 중임")
         return False
@@ -148,10 +165,10 @@ class DoorLockController:
         self.car_controller = car_controller
 
     """문 제어 시도시 print 출력"""
-    def Lock_success(tryCase):
+    def Lock_success(self, tryCase):
         print("[{} - 성공]".format(tryCase))
 
-    def Lock_fail(tryCase, failReason):
+    def Lock_fail(self, tryCase, failReason):
         print("[{} - 실패] : {}".format(tryCase, failReason))
 
     """문이 열려있어서 잠금/잠금해제 실패한 경우"""
@@ -172,7 +189,7 @@ class DoorLockController:
             return False
         
         # 수정 제시
-        # return self.car_controller.get_left_door_status() == "CLOSED" and self.car_controller.get_right_door_status() == "CLOSED"
+        # return (self.car_controller.get_left_door_status() == "CLOSED" and self.car_controller.get_right_door_status() == "CLOSED")
 
         
     """
@@ -181,7 +198,7 @@ class DoorLockController:
     """
     # 차랑의 잠금상태 업데이트?
     def vehicle_statusChecking(self):
-        if self.car_controller.get_left_door_lock == "LOCKED" and self.car_controller.get_right_door_lock() == "LOCKED":
+        if self.car_controller.get_left_door_lock() == "LOCKED" and self.car_controller.get_right_door_lock() == "LOCKED":
             self.car_controller.lock_vehicle()
         else:
             self.car_controller.unlock_vehicle()
@@ -190,7 +207,7 @@ class DoorLockController:
         tryCase = "모든 문 잠금 시도"
 
         if self.get_allDoor_checking(): # 좌/우 문이 모두 닫혀있는지 확인
-            if self.car_controller.get_left_door_lock == "LOCKED" and self.car_controller.get_right_door_lock() == "LOCKED":
+            if self.car_controller.get_left_door_lock() == "LOCKED" and self.car_controller.get_right_door_lock() == "LOCKED":
                 self.Lock_fail(tryCase, "이미 모든 문이 잠긴 상태입니다.")
             else:
                 self.car_controller.lock_left_door()
@@ -207,7 +224,7 @@ class DoorLockController:
         if self.car_controller.get_speed() != 0:
             self.Lock_fail(tryCase, "차량이 주행 중입니다.")
         elif self.get_allDoor_checking():
-            if self.car_controller.get_left_door_lock == "UNLOCKED" and self.car_controller.get_right_door_lock() == "UNLOCKED":
+            if self.car_controller.get_left_door_lock() == "UNLOCKED" and self.car_controller.get_right_door_lock() == "UNLOCKED":
                 self.Lock_fail(tryCase, "이미 모든 문이 잠금 해제된 상태입니다.")
             else:
                 self.Lock_success(tryCase)
@@ -223,7 +240,7 @@ class DoorLockController:
         tryCase = "왼쪽 문 잠금 시도"
 
         if self.get_allDoor_checking():
-            if self.car_controller.get_left_door_lock == "LOCKED":
+            if self.car_controller.get_left_door_lock() == "LOCKED":
                 self.Lock_fail(tryCase, "이미 왼쪽 문이 잠긴 상태입니다.")
             else:
                 self.Lock_success(tryCase)
@@ -240,7 +257,7 @@ class DoorLockController:
         if self.car_controller.get_speed() != 0:
             self.Lock_fail(tryCase, "차량이 주행 중입니다.")
         elif self.get_allDoor_checking():
-            if self.car_controller.get_left_door_lock == "UNLOCKED":
+            if self.car_controller.get_left_door_lock() == "UNLOCKED":
                 self.Lock_fail(tryCase, "이미 왼쪽 문이 잠금 해제된 상태입니다.")
             else:
                 self.Lock_success(tryCase)
@@ -255,7 +272,7 @@ class DoorLockController:
         tryCase = "오른쪽 문 잠금 시도"
 
         if self.get_allDoor_checking():
-            if self.car_controller.get_right_door_lock == "LOCKED":
+            if self.car_controller.get_right_door_lock() == "LOCKED":
                 self.Lock_fail(tryCase, "이미 오른쪽 문이 잠긴 상태입니다.")
             else:
                 self.Lock_success(tryCase)
@@ -272,7 +289,7 @@ class DoorLockController:
         if self.car_controller.get_speed() != 0:
             self.Lock_fail(tryCase, "차량이 주행 중입니다.")
         elif self.get_allDoor_checking():
-            if self.car_controller.get_right_door_lock == "UNLOCKED":
+            if self.car_controller.get_right_door_lock() == "UNLOCKED":
                 self.Lock_fail(tryCase, "이미 오른쪽 문이 잠금 해제된 상태입니다.")
             else:
                 self.Lock_success(tryCase)
@@ -355,12 +372,13 @@ class TrunkController:
     def __init__(self, car_controller):
         self.car_controller = car_controller
         self.trunk_status = self.car_controller.get_trunk_status()
-        self.current_speed = self.car_controller.get_speed()
+        # self.current_speed = self.car_controller.get_speed()
 
     # 트렁크 열기
     def handle_trunk_open_controller(self):
         # 차가 정차 중 일때
-        if self.current_speed == 0:
+        # if self.current_speed == 0:
+        if self.car_controller.get_speed() == 0:
             # 트렁크가 닫혀 있으면(trunk_status=true)
             if self.trunk_status:
                 self.car_controller.open_trunk()
@@ -369,7 +387,10 @@ class TrunkController:
             else:
                 print("[IGNORE] 트렁크가 이미 열려 있음")
         # 차가 주행 중 일때
-        elif self.current_speed > 0:
+        # elif self.current_speed > 0:
+        elif self.car_controller.get_speed() > 0:
+            ##debug
+            print(self.current_speed)
             print("[IGNORE]차량이 주행 중임으로 트렁크를 열 수 없음")
 
     # 트렁크 닫기
@@ -389,8 +410,18 @@ class CarCommandExecutor:
         self.engin_controller = EngineController(self.car_controller)
         self.movement_controller = MovementController(self.car_controller)
         self.doorLock_controller = DoorLockController(self.car_controller) # lock.py
+        self.door_open_controller = OpenDoorController(self.car_controller) # openClose.py
+        self.door_closed_controller = ClosedDoorController(self.car_controller) # openClose.py
         self.trunk_controller = TrunkController(self.car_controller) # openClose.py
-        self.sos_controller = SOSController(self.car_controller) # addional.py
+        # self.sos_controller = SOSController(self.car_controller) # addional.py
+        self.sos_controller = SOSController(
+            self.car_controller,
+            self.movement_controller,
+            self.doorLock_controller,
+            self.door_open_controller,
+            self.trunk_controller,
+            self.engin_controller
+        )
     
     def execute_command(self, command):
         if command == "ENGINE_BTN":
@@ -404,9 +435,13 @@ class CarCommandExecutor:
             
         ## lock.py 
         # ALL_DOOR_LOCK, ALL_DOOR_UNLOCK -> UNLOCK, LOCK 으로 수정해야함 (input 조건 안맞음)
-        elif command == "ALL_DOOR_LOCK":
+        # elif command == "ALL_DOOR_LOCK":
+        #     self.doorLock_controller.allDoor_Lock()
+        # elif command == "ALL_DOOR_UNLOCK":
+        #     self.doorLock_controller.allDoor_unLock()
+        elif command == "LOCK":
             self.doorLock_controller.allDoor_Lock()
-        elif command == "ALL_DOOR_UNLOCK":
+        elif command == "UNLOCK":
             self.doorLock_controller.allDoor_unLock()
             
         elif command == "LEFT_DOOR_LOCK":
@@ -414,9 +449,9 @@ class CarCommandExecutor:
         elif command == "LEFT_DOOR_UNLOCK":
             self.doorLock_controller.leftDoor_unLock()
             
-        elif command == "RIGHT_DOOR_UNLOCK":
-            self.doorLock_controller.rightDoor_Lock()
         elif command == "RIGHT_DOOR_LOCK":
+            self.doorLock_controller.rightDoor_Lock()
+        elif command == "RIGHT_DOOR_UNLOCK":
             self.doorLock_controller.rightDoor_unLock()
         
         ## openClose.py
@@ -424,9 +459,9 @@ class CarCommandExecutor:
             return self.door_open_controller.handle_left_door_open_controller() # 왼쪽문 열기
         elif command == "LEFT_DOOR_CLOSE":
             return self.door_closed_controller.handle_left_door_closed_controller() # 왼쪽문 닫기
-        elif command == "right_DOOR_OPEN":
+        elif command == "RIGHT_DOOR_OPEN":
             return self.door_open_controller.handle_right_door_open_controller() # 오른쪽 문 열기
-        elif command == "right_DOOR_CLOSE":
+        elif command == "RIGHT_DOOR_CLOSE":
             return self.door_closed_controller.handle_right_door_closed_controller() # 오른쪽 문 닫기
         elif command == "TRUNK_OPEN":
             return self.trunk_controller.handle_trunk_open_controller() # 트렁크 열기
@@ -436,6 +471,9 @@ class CarCommandExecutor:
         ## addional.py
         elif command == "SOS":
             self.sos_controller.activate_sos()  # SOS 기능 호출
+        else:
+            print("잘못된 입력입니다.")
+            return
 
 
 

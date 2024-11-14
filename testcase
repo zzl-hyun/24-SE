@@ -1,0 +1,674 @@
+
+---
+
+## **Test Case Design for Input Signals**
+
+### **1. ENGINE_BTN**
+
+**Test Case 1.1**: **Start the Engine When It's Off**
+
+- **Preconditions**:
+  - Engine is **off**.
+  - Car speed is **0 km/h**.
+- **Input**: `ENGINE_BTN`
+- **Expected Result**:
+  - Engine status changes to **on**.
+- **Test Steps**:
+  1. Verify the engine is off and the car is stationary.
+  2. Press `ENGINE_BTN`.
+  3. Confirm the engine status is now on.
+
+**Test Case 1.2**: **Turn Off the Engine When Car Is Stationary**
+
+- **Preconditions**:
+  - Engine is **on**.
+  - Car speed is **0 km/h**.
+- **Input**: `ENGINE_BTN`
+- **Expected Result**:
+  - Engine status changes to **off**.
+- **Test Steps**:
+  1. Ensure the engine is on and the car is stationary.
+  2. Press `ENGINE_BTN`.
+  3. Confirm the engine status is now off.
+
+**Test Case 1.3**: **Attempt to Turn Off Engine While Driving**
+
+- **Preconditions**:
+  - Engine is **on**.
+  - Car speed is **greater than 0 km/h**.
+- **Input**: `ENGINE_BTN`
+- **Expected Result**:
+  - Engine remains **on**.
+  - Message indicates engine cannot be turned off while driving.
+- **Test Steps**:
+  1. Accelerate the car to a speed above 0 km/h.
+  2. Press `ENGINE_BTN`.
+  3. Verify the engine remains on and the appropriate message is displayed.
+
+---
+
+### **2. ACCELERATE**
+
+**Test Case 2.1**: **Accelerate with Engine On and Doors Closed**
+
+- **Preconditions**:
+  - Engine is **on**.
+  - Car speed is **below maximum** (e.g., less than 200 km/h).
+  - All doors are **closed**.
+  - Trunk is **closed**.
+- **Input**: `ACCELERATE`
+- **Expected Result**:
+  - Car speed increases by **10 km/h**.
+- **Test Steps**:
+  1. Ensure the engine is on, and all doors and trunk are closed.
+  2. Press `ACCELERATE`.
+  3. Confirm the car speed increased by 10 km/h.
+
+**Test Case 2.2**: **Attempt to Accelerate with Engine Off**
+
+- **Preconditions**:
+  - Engine is **off**.
+- **Input**: `ACCELERATE`
+- **Expected Result**:
+  - Car does **not** accelerate.
+  - Message indicates the engine is off.
+- **Test Steps**:
+  1. Ensure the engine is off.
+  2. Press `ACCELERATE`.
+  3. Verify the car speed remains at 0 km/h and the appropriate message is displayed.
+
+**Test Case 2.3**: **Attempt to Accelerate with Door Open**
+
+- **Preconditions**:
+  - Engine is **on**.
+  - At least one door is **open**.
+- **Input**: `ACCELERATE`
+- **Expected Result**:
+  - Car does **not** accelerate.
+  - Message indicates a door is open.
+- **Test Steps**:
+  1. Ensure the engine is on and open one of the doors.
+  2. Press `ACCELERATE`.
+  3. Confirm the car does not accelerate and the message is displayed.
+
+**Test Case 2.4**: **Attempt to Accelerate with Trunk Open**
+
+- **Preconditions**:
+  - Engine is **on**.
+  - Trunk is **open**.
+- **Input**: `ACCELERATE`
+- **Expected Result**:
+  - Car does **not** accelerate.
+  - Message indicates the trunk is open.
+- **Test Steps**:
+  1. Ensure the engine is on and the trunk is open.
+  2. Press `ACCELERATE`.
+  3. Confirm the car does not accelerate and the message is displayed.
+
+**Test Case 2.5**: **Attempt to Exceed Maximum Speed**
+
+- **Preconditions**:
+  - Engine is **on**.
+  - Car speed is at **maximum** (e.g., 200 km/h).
+- **Input**: `ACCELERATE`
+- **Expected Result**:
+  - Car speed remains at maximum.
+  - Message indicates maximum speed reached.
+- **Test Steps**:
+  1. Accelerate the car to maximum speed.
+  2. Press `ACCELERATE`.
+  3. Confirm the speed does not increase and the message is displayed.
+
+---
+
+### **3. BRAKE**
+
+**Test Case 3.1**: **Brake While Moving**
+
+- **Preconditions**:
+  - Car speed is **greater than 0 km/h**.
+- **Input**: `BRAKE`
+- **Expected Result**:
+  - Car speed decreases by **10 km/h**.
+- **Test Steps**:
+  1. Ensure the car is moving.
+  2. Press `BRAKE`.
+  3. Confirm the car speed decreased by 10 km/h.
+
+**Test Case 3.2**: **Brake When Stationary**
+
+- **Preconditions**:
+  - Car speed is **0 km/h**.
+- **Input**: `BRAKE`
+- **Expected Result**:
+  - Car remains stationary.
+  - Message indicates car is already stopped.
+- **Test Steps**:
+  1. Ensure the car is stationary.
+  2. Press `BRAKE`.
+  3. Verify no change in speed and the message is displayed.
+
+---
+
+### **4. LOCK**
+
+**Test Case 4.1**: **Lock All Doors When Closed and Unlocked**
+
+- **Preconditions**:
+  - Both doors are **closed**.
+  - Both doors are **unlocked**.
+- **Input**: `LOCK`
+- **Expected Result**:
+  - Both doors become **locked**.
+  - Success message displayed.
+- **Test Steps**:
+  1. Ensure doors are closed and unlocked.
+  2. Press `LOCK`.
+  3. Confirm doors are locked and message is displayed.
+
+**Test Case 4.2**: **Attempt to Lock Doors When Open**
+
+- **Preconditions**:
+  - At least one door is **open**.
+- **Input**: `LOCK`
+- **Expected Result**:
+  - Doors remain **unlocked**.
+  - Failure message indicates doors are open.
+- **Test Steps**:
+  1. Open one of the doors.
+  2. Press `LOCK`.
+  3. Verify doors are not locked and message is displayed.
+
+**Test Case 4.3**: **Attempt to Lock Doors When Already Locked**
+
+- **Preconditions**:
+  - Both doors are **closed** and **locked**.
+- **Input**: `LOCK`
+- **Expected Result**:
+  - Doors remain **locked**.
+  - Failure message indicates doors are already locked.
+- **Test Steps**:
+  1. Ensure doors are closed and locked.
+  2. Press `LOCK`.
+  3. Confirm doors remain locked and message is displayed.
+
+---
+
+### **5. UNLOCK**
+
+**Test Case 5.1**: **Unlock All Doors When Car Is Stationary**
+
+- **Preconditions**:
+  - Car speed is **0 km/h**.
+  - Both doors are **closed** and **locked**.
+- **Input**: `UNLOCK`
+- **Expected Result**:
+  - Both doors become **unlocked**.
+  - Success message displayed.
+- **Test Steps**:
+  1. Ensure the car is stationary and doors are locked.
+  2. Press `UNLOCK`.
+  3. Confirm doors are unlocked and message is displayed.
+
+**Test Case 5.2**: **Attempt to Unlock Doors While Driving**
+
+- **Preconditions**:
+  - Car speed is **greater than 0 km/h**.
+- **Input**: `UNLOCK`
+- **Expected Result**:
+  - Doors remain **locked**.
+  - Failure message indicates car is moving.
+- **Test Steps**:
+  1. Accelerate the car to a speed above 0 km/h.
+  2. Press `UNLOCK`.
+  3. Verify doors remain locked and message is displayed.
+
+**Test Case 5.3**: **Attempt to Unlock Doors When Already Unlocked**
+
+- **Preconditions**:
+  - Both doors are **closed** and **unlocked**.
+- **Input**: `UNLOCK`
+- **Expected Result**:
+  - Doors remain **unlocked**.
+  - Failure message indicates doors are already unlocked.
+- **Test Steps**:
+  1. Ensure doors are closed and unlocked.
+  2. Press `UNLOCK`.
+  3. Confirm doors remain unlocked and message is displayed.
+
+---
+
+### **6. LEFT_DOOR_LOCK**
+
+**Test Case 6.1**: **Lock Left Door When Closed and Unlocked**
+
+- **Preconditions**:
+  - Left door is **closed** and **unlocked**.
+- **Input**: `LEFT_DOOR_LOCK`
+- **Expected Result**:
+  - Left door becomes **locked**.
+  - Success message displayed.
+- **Test Steps**:
+  1. Ensure the left door is closed and unlocked.
+  2. Press `LEFT_DOOR_LOCK`.
+  3. Confirm the left door is locked and message is displayed.
+
+**Test Case 6.2**: **Attempt to Lock Left Door When Open**
+
+- **Preconditions**:
+  - Left door is **open**.
+- **Input**: `LEFT_DOOR_LOCK`
+- **Expected Result**:
+  - Left door remains **unlocked**.
+  - Failure message indicates door is open.
+- **Test Steps**:
+  1. Open the left door.
+  2. Press `LEFT_DOOR_LOCK`.
+  3. Verify the door is not locked and message is displayed.
+
+**Test Case 6.3**: **Attempt to Lock Left Door When Already Locked**
+
+- **Preconditions**:
+  - Left door is **closed** and **locked**.
+- **Input**: `LEFT_DOOR_LOCK`
+- **Expected Result**:
+  - Left door remains **locked**.
+  - Failure message indicates door is already locked.
+- **Test Steps**:
+  1. Ensure the left door is closed and locked.
+  2. Press `LEFT_DOOR_LOCK`.
+  3. Confirm the door remains locked and message is displayed.
+
+---
+
+### **7. LEFT_DOOR_UNLOCK**
+
+**Test Case 7.1**: **Unlock Left Door When Car Is Stationary**
+
+- **Preconditions**:
+  - Car speed is **0 km/h**.
+  - Left door is **closed** and **locked**.
+- **Input**: `LEFT_DOOR_UNLOCK`
+- **Expected Result**:
+  - Left door becomes **unlocked**.
+  - Success message displayed.
+- **Test Steps**:
+  1. Ensure the car is stationary and the left door is locked.
+  2. Press `LEFT_DOOR_UNLOCK`.
+  3. Confirm the left door is unlocked and message is displayed.
+
+**Test Case 7.2**: **Attempt to Unlock Left Door While Driving**
+
+- **Preconditions**:
+  - Car speed is **greater than 0 km/h**.
+- **Input**: `LEFT_DOOR_UNLOCK`
+- **Expected Result**:
+  - Left door remains **locked**.
+  - Failure message indicates car is moving.
+- **Test Steps**:
+  1. Accelerate the car.
+  2. Press `LEFT_DOOR_UNLOCK`.
+  3. Verify the door remains locked and message is displayed.
+
+**Test Case 7.3**: **Attempt to Unlock Left Door When Already Unlocked**
+
+- **Preconditions**:
+  - Left door is **closed** and **unlocked**.
+- **Input**: `LEFT_DOOR_UNLOCK`
+- **Expected Result**:
+  - Left door remains **unlocked**.
+  - Failure message indicates door is already unlocked.
+- **Test Steps**:
+  1. Ensure the left door is closed and unlocked.
+  2. Press `LEFT_DOOR_UNLOCK`.
+  3. Confirm the door remains unlocked and message is displayed.
+
+---
+
+### **8. RIGHT_DOOR_LOCK**
+
+**Test Case 8.1**: **Lock Right Door When Closed and Unlocked**
+
+- **Preconditions**:
+  - Right door is **closed** and **unlocked**.
+- **Input**: `RIGHT_DOOR_LOCK`
+- **Expected Result**:
+  - Right door becomes **locked**.
+  - Success message displayed.
+- **Test Steps**:
+  1. Ensure the right door is closed and unlocked.
+  2. Press `RIGHT_DOOR_LOCK`.
+  3. Confirm the right door is locked and message is displayed.
+
+**Test Case 8.2**: **Attempt to Lock Right Door When Open**
+
+- **Preconditions**:
+  - Right door is **open**.
+- **Input**: `RIGHT_DOOR_LOCK`
+- **Expected Result**:
+  - Right door remains **unlocked**.
+  - Failure message indicates door is open.
+- **Test Steps**:
+  1. Open the right door.
+  2. Press `RIGHT_DOOR_LOCK`.
+  3. Verify the door is not locked and message is displayed.
+
+**Test Case 8.3**: **Attempt to Lock Right Door When Already Locked**
+
+- **Preconditions**:
+  - Right door is **closed** and **locked**.
+- **Input**: `RIGHT_DOOR_LOCK`
+- **Expected Result**:
+  - Right door remains **locked**.
+  - Failure message indicates door is already locked.
+- **Test Steps**:
+  1. Ensure the right door is closed and locked.
+  2. Press `RIGHT_DOOR_LOCK`.
+  3. Confirm the door remains locked and message is displayed.
+
+---
+
+### **9. RIGHT_DOOR_UNLOCK**
+
+**Test Case 9.1**: **Unlock Right Door When Car Is Stationary**
+
+- **Preconditions**:
+  - Car speed is **0 km/h**.
+  - Right door is **closed** and **locked**.
+- **Input**: `RIGHT_DOOR_UNLOCK`
+- **Expected Result**:
+  - Right door becomes **unlocked**.
+  - Success message displayed.
+- **Test Steps**:
+  1. Ensure the car is stationary and the right door is locked.
+  2. Press `RIGHT_DOOR_UNLOCK`.
+  3. Confirm the right door is unlocked and message is displayed.
+
+**Test Case 9.2**: **Attempt to Unlock Right Door While Driving**
+
+- **Preconditions**:
+  - Car speed is **greater than 0 km/h**.
+- **Input**: `RIGHT_DOOR_UNLOCK`
+- **Expected Result**:
+  - Right door remains **locked**.
+  - Failure message indicates car is moving.
+- **Test Steps**:
+  1. Accelerate the car.
+  2. Press `RIGHT_DOOR_UNLOCK`.
+  3. Verify the door remains locked and message is displayed.
+
+**Test Case 9.3**: **Attempt to Unlock Right Door When Already Unlocked**
+
+- **Preconditions**:
+  - Right door is **closed** and **unlocked**.
+- **Input**: `RIGHT_DOOR_UNLOCK`
+- **Expected Result**:
+  - Right door remains **unlocked**.
+  - Failure message indicates door is already unlocked.
+- **Test Steps**:
+  1. Ensure the right door is closed and unlocked.
+  2. Press `RIGHT_DOOR_UNLOCK`.
+  3. Confirm the door remains unlocked and message is displayed.
+
+---
+
+### **10. LEFT_DOOR_OPEN**
+
+**Test Case 10.1**: **Open Left Door When Unlocked**
+
+- **Preconditions**:
+  - Left door is **closed** and **unlocked**.
+- **Input**: `LEFT_DOOR_OPEN`
+- **Expected Result**:
+  - Left door becomes **open**.
+  - Message indicates door is opened.
+- **Test Steps**:
+  1. Ensure the left door is closed and unlocked.
+  2. Press `LEFT_DOOR_OPEN`.
+  3. Confirm the door is open and message is displayed.
+
+**Test Case 10.2**: **Attempt to Open Left Door When Locked**
+
+- **Preconditions**:
+  - Left door is **closed** and **locked**.
+- **Input**: `LEFT_DOOR_OPEN`
+- **Expected Result**:
+  - Left door remains **closed**.
+  - Message indicates door is locked.
+- **Test Steps**:
+  1. Ensure the left door is closed and locked.
+  2. Press `LEFT_DOOR_OPEN`.
+  3. Verify the door does not open and message is displayed.
+
+**Test Case 10.3**: **Attempt to Open Left Door When Already Open**
+
+- **Preconditions**:
+  - Left door is **open**.
+- **Input**: `LEFT_DOOR_OPEN`
+- **Expected Result**:
+  - Left door remains **open**.
+  - Message indicates door is already open.
+- **Test Steps**:
+  1. Ensure the left door is open.
+  2. Press `LEFT_DOOR_OPEN`.
+  3. Confirm the door remains open and message is displayed.
+
+---
+
+### **11. LEFT_DOOR_CLOSE**
+
+**Test Case 11.1**: **Close Left Door**
+
+- **Preconditions**:
+  - Left door is **open**.
+- **Input**: `LEFT_DOOR_CLOSE`
+- **Expected Result**:
+  - Left door becomes **closed**.
+  - Message indicates door is closed.
+- **Test Steps**:
+  1. Ensure the left door is open.
+  2. Press `LEFT_DOOR_CLOSE`.
+  3. Confirm the door is closed and message is displayed.
+
+**Test Case 11.2**: **Attempt to Close Left Door When Already Closed**
+
+- **Preconditions**:
+  - Left door is **closed**.
+- **Input**: `LEFT_DOOR_CLOSE`
+- **Expected Result**:
+  - Left door remains **closed**.
+  - Message indicates door is already closed.
+- **Test Steps**:
+  1. Ensure the left door is closed.
+  2. Press `LEFT_DOOR_CLOSE`.
+  3. Confirm no change and message is displayed.
+
+---
+
+### **12. RIGHT_DOOR_OPEN**
+
+**Test Case 12.1**: **Open Right Door When Unlocked**
+
+- **Preconditions**:
+  - Right door is **closed** and **unlocked**.
+- **Input**: `RIGHT_DOOR_OPEN`
+- **Expected Result**:
+  - Right door becomes **open**.
+  - Message indicates door is opened.
+- **Test Steps**:
+  1. Ensure the right door is closed and unlocked.
+  2. Press `RIGHT_DOOR_OPEN`.
+  3. Confirm the door is open and message is displayed.
+
+**Test Case 12.2**: **Attempt to Open Right Door When Locked**
+
+- **Preconditions**:
+  - Right door is **closed** and **locked**.
+- **Input**: `RIGHT_DOOR_OPEN`
+- **Expected Result**:
+  - Right door remains **closed**.
+  - Message indicates door is locked.
+- **Test Steps**:
+  1. Ensure the right door is closed and locked.
+  2. Press `RIGHT_DOOR_OPEN`.
+  3. Verify the door does not open and message is displayed.
+
+**Test Case 12.3**: **Attempt to Open Right Door When Already Open**
+
+- **Preconditions**:
+  - Right door is **open**.
+- **Input**: `RIGHT_DOOR_OPEN`
+- **Expected Result**:
+  - Right door remains **open**.
+  - Message indicates door is already open.
+- **Test Steps**:
+  1. Ensure the right door is open.
+  2. Press `RIGHT_DOOR_OPEN`.
+  3. Confirm the door remains open and message is displayed.
+
+---
+
+### **13. RIGHT_DOOR_CLOSE**
+
+**Test Case 13.1**: **Close Right Door**
+
+- **Preconditions**:
+  - Right door is **open**.
+- **Input**: `RIGHT_DOOR_CLOSE`
+- **Expected Result**:
+  - Right door becomes **closed**.
+  - Message indicates door is closed.
+- **Test Steps**:
+  1. Ensure the right door is open.
+  2. Press `RIGHT_DOOR_CLOSE`.
+  3. Confirm the door is closed and message is displayed.
+
+**Test Case 13.2**: **Attempt to Close Right Door When Already Closed**
+
+- **Preconditions**:
+  - Right door is **closed**.
+- **Input**: `RIGHT_DOOR_CLOSE`
+- **Expected Result**:
+  - Right door remains **closed**.
+  - Message indicates door is already closed.
+- **Test Steps**:
+  1. Ensure the right door is closed.
+  2. Press `RIGHT_DOOR_CLOSE`.
+  3. Confirm no change and message is displayed.
+
+---
+
+### **14. TRUNK_OPEN**
+
+**Test Case 14.1**: **Open Trunk When Stationary**
+
+- **Preconditions**:
+  - Car speed is **0 km/h**.
+  - Trunk is **closed**.
+- **Input**: `TRUNK_OPEN`
+- **Expected Result**:
+  - Trunk becomes **open**.
+  - Message indicates trunk is opened.
+- **Test Steps**:
+  1. Ensure the car is stationary and trunk is closed.
+  2. Press `TRUNK_OPEN`.
+  3. Confirm the trunk is open and message is displayed.
+
+**Test Case 14.2**: **Attempt to Open Trunk While Driving**
+
+- **Preconditions**:
+  - Car speed is **greater than 0 km/h**.
+- **Input**: `TRUNK_OPEN`
+- **Expected Result**:
+  - Trunk remains **closed**.
+  - Message indicates trunk cannot be opened while driving.
+- **Test Steps**:
+  1. Accelerate the car.
+  2. Press `TRUNK_OPEN`.
+  3. Verify the trunk remains closed and message is displayed.
+
+**Test Case 14.3**: **Attempt to Open Trunk When Already Open**
+
+- **Preconditions**:
+  - Trunk is **open**.
+- **Input**: `TRUNK_OPEN`
+- **Expected Result**:
+  - Trunk remains **open**.
+  - Message indicates trunk is already open.
+- **Test Steps**:
+  1. Ensure the trunk is open.
+  2. Press `TRUNK_OPEN`.
+  3. Confirm no change and message is displayed.
+
+---
+
+### **15. TRUNK_CLOSE**
+
+**Test Case 15.1**: **Close Trunk**
+
+- **Preconditions**:
+  - Trunk is **open**.
+- **Input**: `TRUNK_CLOSE`
+- **Expected Result**:
+  - Trunk becomes **closed**.
+  - Message indicates trunk is closed.
+- **Test Steps**:
+  1. Ensure the trunk is open.
+  2. Press `TRUNK_CLOSE`.
+  3. Confirm the trunk is closed and message is displayed.
+
+**Test Case 15.2**: **Attempt to Close Trunk When Already Closed**
+
+- **Preconditions**:
+  - Trunk is **closed**.
+- **Input**: `TRUNK_CLOSE`
+- **Expected Result**:
+  - Trunk remains **closed**.
+  - Message indicates trunk is already closed.
+- **Test Steps**:
+  1. Ensure the trunk is closed.
+  2. Press `TRUNK_CLOSE`.
+  3. Confirm no change and message is displayed.
+
+---
+
+### **16. SOS**
+
+**Test Case 16.1**: **Activate SOS While Driving**
+
+- **Preconditions**:
+  - Car speed is **greater than 0 km/h**.
+- **Input**: `SOS`
+- **Expected Result**:
+  - Car slows to a stop.
+  - Engine turns **off**.
+  - All doors **unlock** and **open**.
+  - Trunk **opens**.
+  - Message indicates SOS is activated.
+- **Test Steps**:
+  1. Accelerate the car.
+  2. Press `SOS`.
+  3. Confirm the car stops, engine is off, doors and trunk are open, and message is displayed.
+
+**Test Case 16.2**: **Activate SOS When Stationary**
+
+- **Preconditions**:
+  - Car speed is **0 km/h**.
+- **Input**: `SOS`
+- **Expected Result**:
+  - Engine turns **off** (if on).
+  - All doors **unlock** and **open**.
+  - Trunk **opens**.
+  - Message indicates SOS is activated.
+- **Test Steps**:
+  1. Ensure the car is stationary.
+  2. Press `SOS`.
+  3. Confirm the engine is off, doors and trunk are open, and message is displayed.
+
+---
+
+## **Conclusion**
+
+By executing these test cases, you can thoroughly validate the functionality and robustness of your car simulator. Each test case addresses different scenarios, including normal operations, edge cases, and invalid actions, ensuring comprehensive coverage.
+
+If you need further assistance or have questions about specific scenarios, feel free to ask!

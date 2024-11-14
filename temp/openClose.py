@@ -129,6 +129,7 @@ class CarCommandExecutor:
             car_controller.lock_right_door() # 오른쪽문 잠금
         elif command == "RIGHT_DOOR_UNLOCK":
             car_controller.unlock_right_door() # 오른쪽문 잠금 해제
+            
         elif command == "LEFT_DOOR_OPEN":
             return self.door_open_controller.handle_left_door_open_controller() # 왼쪽문 열기
         elif command == "LEFT_DOOR_CLOSE":
